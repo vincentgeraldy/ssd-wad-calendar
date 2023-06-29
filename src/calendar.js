@@ -45,9 +45,14 @@ export default class Calendar extends Component {
       localStorage.getItem("mockevents") == null
         ? []
         : JSON.parse(localStorage.getItem("mockevents"));
+    const portalData =
+      localStorage.getItem("portalData") == null
+        ? {}
+        : localStorage.getItem("portalData");
 
     this.setState({
       mockevents: mockevents,
+      portalData: portalData,
     });
   }
 
@@ -154,15 +159,24 @@ export default class Calendar extends Component {
       showPortal: true,
       portalData: ev,
     });
+    localStorage.setItem("portalData", JSON.stringify(ev));
   };
 
   handleDelete = () => {
-    this.setState({
-      mockevents: this.state.mockevents.filter(
-        (ev) => ev.name !== this.state.portalData.name
-      ),
-      showPortal: !this.state.showPortal,
-    });
+    this.setState(
+      {
+        mockevents: this.state.mockevents.filter(
+          (ev) => ev.name !== this.state.portalData.name
+        ),
+        showPortal: !this.state.showPortal,
+      },
+      () => {
+        localStorage.setItem(
+          "mockevents",
+          JSON.stringify(this.state.mockevents)
+        );
+      }
+    );
   };
 
   render() {
@@ -259,7 +273,7 @@ export default class Calendar extends Component {
               className="overlay-portal"
             ></div>
             <h2>Name : {this.state.portalData.name}</h2>
-            <p>Date : {this.state.portalData.date.toDateString()}</p>
+            <p>Date : {new Date(this.state.portalData.date).toDateString()}</p>
             <p>Time : {this.state.portalData.time}</p>
             <p>Email : {this.state.portalData.email}</p>
             <ion-icon
